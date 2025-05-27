@@ -5,6 +5,20 @@ namespace Catalog.API.Products.UpdateProducts
         : ICommand<UpdateProductResult>;
 
     public record UpdateProductResult(bool IsSuccess);
+
+    public class UpdateProductCommandValidator : AbstractValidator<UpdateProductCommand>
+    {
+        public UpdateProductCommandValidator()
+        {
+            RuleFor(x => x.Id).NotEmpty().WithMessage("Product ID cannot be empty.");
+            RuleFor(x => x.Name).NotEmpty().WithMessage("Product name cannot be empty.").Length(2, 150).WithMessage("Product name must be between 2 and 150");
+            RuleFor(x => x.Category).NotEmpty().WithMessage("Product category cannot be empty.");
+            RuleFor(x => x.Description).NotEmpty().WithMessage("Product description cannot be empty.");
+            RuleFor(x => x.ImageFile).NotEmpty().WithMessage("Product image file cannot be empty.");
+            RuleFor(x => x.Price).GreaterThan(0).WithMessage("Product price must be greater than zero.");
+        }
+    }
+
     internal class UpdateProductCommandHandler 
         (IDocumentSession session, ILogger<UpdateProductCommandHandler> logger)
         : ICommandHandler<UpdateProductCommand, UpdateProductResult>
@@ -17,7 +31,7 @@ namespace Catalog.API.Products.UpdateProducts
 
             if (product == null)
             {
-                throw new ProductNotFoundException();
+                throw new ProductNotFoundException(command.Id);
             }
 
             product.Name = command.Name;

@@ -19,10 +19,6 @@ namespace Catalog.API.Products.GetProductByCategory
                 .Where(p => p.Categories.Contains(query.Category))
                 .ToListAsync(cancellationToken);
 
-            if(products is null)
-            {
-                throw new ProductNotFoundException();
-            }
 
             return new GetProductByCategoryResult(products);
         }
