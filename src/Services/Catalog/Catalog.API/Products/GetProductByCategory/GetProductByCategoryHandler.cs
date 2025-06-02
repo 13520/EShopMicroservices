@@ -8,13 +8,11 @@ namespace Catalog.API.Products.GetProductByCategory
     public record GetProductByCategoryResult(IEnumerable<Product> Products);
 
     internal class GetProductByCategoryQueryHandler
-        (IDocumentSession session, ILogger<GetProductsQueryHandler> logger) 
+        (IDocumentSession session) 
         : IQueryHandler<GetProductByCategoryQuery, GetProductByCategoryResult>
     {
         public async Task<GetProductByCategoryResult> Handle(GetProductByCategoryQuery query, CancellationToken cancellationToken)
         {
-            logger.LogInformation("Handling GetProductByCategoryQuery. Handle called with {@Query}", query);
-
             var products = await session.Query<Product>()
                 .Where(p => p.Categories.Contains(query.Category))
                 .ToListAsync(cancellationToken);
